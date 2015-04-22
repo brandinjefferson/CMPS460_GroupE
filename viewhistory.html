@@ -1,0 +1,22 @@
+<!-- www.w3schools.com/Ajax/default.asp 
+stackoverflow.com/questions/11771774/creating-select-list-from-database -->
+<html>
+<head>
+<title>New Wave Cinema: View History</title>
+</head>
+<script>
+function getHistory(str) {
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function() {
+		if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
+			document.getElementById("viewhistory").innerHTML = xmlhttp.responsetext;
+		}
+	}
+	xmlhttp.open("GET","GetHistory.php?name="+str,true);
+	xmlhttp.send();
+}
+</script>
+<body>
+
+</body>
+</html>

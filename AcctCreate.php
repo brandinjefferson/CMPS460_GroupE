@@ -3,6 +3,11 @@
 <?php 
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
+//Setup variables
+$host = "";
+$user = "bej0843";
+$password = "cmps460";
+$database = "cs4601_groupE";
 
 //Get Variables from signup.html
 $mmbrName = $_POST['mmbrName'];
@@ -12,8 +17,12 @@ $mmbrPhone = $_POST['mmbrPhone'];
 $mmbrEmail = $_POST['mmbrEmail'];
 $mmbrPass = $_POST['mmbrPass'];
 $mmbrLength = $_POST['mmbrLength'];
+$mmbrPrice = intval(substr($mmbrLength,0,3));
 
 //connect to database
+$connect = mysql_connect($host,$user,$password)
+	 or die("Unable to connect to database");
+@mysql_select_db($database) or die("Unable to select database");
 
 //Create new account number
 function generateAccount(){
@@ -50,10 +59,12 @@ $expire_date = date('Y-m-d',strtotime(+$mmbrLength));
 $query = 'INSERT INTO nwc_membership
 			values($mmbrAcct,$expire_date,$start_date)';
 mysql_query($query);
+
 //Add member to database and attach to account
 $query = 'INSERT INTO nwc_membership
 			values($mmbrName, $mmbrAcct,$mmbrPhone,$mmbrEmail,$mmbrAddr)';
 mysql_query($query);
+
 //Send email containing account information.
 $subject = "New Wave Cinema Account Information";
 $msg = "
@@ -68,11 +79,14 @@ Your account information is listed below.<br><br> </p>
 <th>Account Number</th>
 <th>Password</th>
 <th>Expiration Date</th>
+<th>Price</th>
 </tr>
 <tr>
 <td>$mmbrAcct</td>
 <td>$mmbrPass</td>
 <td>$expire_date</td>
+<td>$mmbrPrice</td>
+<td>
 </tr></table>
 </body></html>
 ";
@@ -88,6 +102,8 @@ print("Your credentials have been sent to the e-mail you provided. <br>");
 print("Account Number: $mmbrAcct <br>");
 print("Password: $mmbrPass <br> <br>");
 print("Please keep track of these, as they are required in order to use our services.<br><br>");
+
+mysql_close($connect);
 ?>
 
 <button type="button" onclick="login.html">Log In</button>
