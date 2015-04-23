@@ -10,7 +10,7 @@ $mmbrAcct = $_SESSION['mmbrAcct'];
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 $host = "";
-$user = "bej0843";
+$user = "groupE";
 $password = "cmps460";
 $database = "cs4601_groupE";
 $connect = mysql_connect($host,$user,$password)

@@ -5,7 +5,7 @@ error_reporting(E_ALL);
 ini_set("display_errors", 1);
 //Setup variables
 $host = "";
-$user = "bej0843";
+$user = "groupE";
 $password = "cmps460";
 $database = "cs4601_groupE";
 
@@ -29,7 +29,7 @@ function generateAccount(){
 	$characters = '0123456789';
 	$char_len = strlen($characters);
 	$acct = '';
-	for ($i =0;$i<10;$i++){
+	for ($i =0;$i<9;$i++){
 		$acct .= $characters[rand(0,$char_len-1)]; 
 	}
 	return $acct;
@@ -39,31 +39,40 @@ $query = 'SELECT account_no
 			FROM nwc_membership
 			WHERE account_no = $mmbrAcct';
 $acctCheck = mysql_query($query);
-if (!$acctCheck){
-	die('Account check failed to execute.');
+
+if ($acctCheck){
+    	while (mysql_num_rows($acctCheck) > 0){
+    	$mmbrAcct = generateAccount();
+    	$acctCheck = mysql_query($query);
+    	if (!$acctCheck){
+    		break;
+    	}
+    }
 }
 
-while (mysql_num_rows($acctCheck) > 0){
-	$mmbrAcct = generateAccount();
-	$acctCheck = mysql_query($query);
-	if (!$acctCheck){
-		die('Account check failed to execute.');
-	}
-}
 
 //Get start(current) date and expiration date
 $start_date = date('Y-m-d');
-$expire_date = date('Y-m-d',strtotime(+$mmbrLength));
+$expire_date = date('Y-m-d',strtotime('+'. $mmbrLength));
+
+/*$q = "insert into nwc_membership (account_no,start_date,expire_date,password) 
+values(111111111,'$start_date','$expire_date','bullocks')";
+$eq = mysql_query($q);
+if ($eq) {
+	print "It worked?<br>";
+} else {
+	print "Nope <br>";
+}*/
 
 //Add account to database
-$query = 'INSERT INTO nwc_membership
-			values($mmbrAcct,$expire_date,$start_date)';
-mysql_query($query);
+$query = "INSERT INTO nwc_membership (account_no,start_date,expire_date,password)
+			values('$mmbrAcct','$start_date','$expire_date','$mmbrPass')";
+$exec_query1 = mysql_query($query);
 
 //Add member to database and attach to account
-$query = 'INSERT INTO nwc_membership
-			values($mmbrName, $mmbrAcct,$mmbrPhone,$mmbrEmail,$mmbrAddr)';
-mysql_query($query);
+$query = "INSERT INTO nwc_member (mb_name,account_no,phone_no,email,age,addr)
+			values('$mmbrName', '$mmbrAcct',$mmbrPhone,'$mmbrEmail',$mmbrAge,'$mmbrAddr')";
+$exec_query2 = mysql_query($query);
 
 //Send email containing account information.
 $subject = "New Wave Cinema Account Information";
@@ -97,12 +106,16 @@ $headers .= "From: brandinui@gmail.com" . "\r\n";
 mail($mmbrEmail,$subject,$msg,$headers);
 
 //Final information
-print("Account successfully created.<br>");
-print("Your credentials have been sent to the e-mail you provided. <br>");
-print("Account Number: $mmbrAcct <br>");
-print("Password: $mmbrPass <br> <br>");
-print("Please keep track of these, as they are required in order to use our services.<br><br>");
-
+if ($exec_query1 && $exec_query2){
+	print("Account successfully created.<br>");
+	print("Your credentials have been sent to the e-mail you provided. <br>");
+	print("Account Number: $mmbrAcct <br>");
+	print("Password: $mmbrPass <br> <br>");
+	print("Please keep track of these, as they are required in order to use our services.<br><br>");
+}
+else {
+	print("There was an error creating your information. Please ensure you've filled everything out.")
+}
 mysql_close($connect);
 ?>
 
