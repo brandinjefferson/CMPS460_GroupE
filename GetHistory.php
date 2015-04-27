@@ -1,34 +1,46 @@
+<html><head>
+<title>New Wave Cinema: View History</title>
+</head><body>
 <?php
-//Figure out how to load query into a database to use in select list
+//Resume the session
 session_start();
 
-//Get variables; name from viewhistory.html, mmbrAcct from mainmenu.html
-$name = $_REQUEST['name'];
-$mmbrAcct = $_SESSION['mmbrAcct'];
-
 //Log in to mysql
-error_reporting(E_ALL);
-ini_set("display_errors", 1);
-$host = "";
-$user = "groupE";
-$password = "cmps460";
-$database = "cs4601_groupE";
-$connect = mysql_connect($host,$user,$password)
-	 or die("Unable to connect to database");
-@mysql_select_db($database) or die("Unable to select database");
+include('sessioncore.php');
+include('connecttophp.php');
 
-//Generate and run query
-if ($name != "All") {
-	$query = "SELECT s.title, s.start_time
-				FROM nwc_showing s, nwc_reserved r
-				WHERE r.mb_name = $name AND 
-						s.t_id = r.t_id AND
-						r.account_no = $mmbrAcct";
+if (!loggedin()){
+	header("Location: UserIndex.php");
 }
-else $query = "SELECT s.title, s.start_time
+
+//Get variables; name from viewhistory.php, mmbrAcct from the session
+$name = $_GET['mmbrName'];
+//For test purposes, use this acct
+//$mmbrAcct = '990466567';
+$mmbrAcct = $_SESSION['user_id'];
+//Generate and run query
+//If a name was chosen, run first query.
+if ($name != "*") {
+	$query = "SELECT r.mb_name, s.title, r.day
+				FROM nwc_showing s, nwc_reserved r
+				WHERE r.mb_name = '$name' AND 
+						s.t_id = r.t_id AND
+						s.complex_name = r.complex_name AND
+						s.start_time = r.time AND
+						r.account_no = '$mmbrAcct' AND
+						r.day <= CURDATE()
+						ORDER BY r.mb_name ASC, s.title ASC";
+}
+else {
+	$query = "SELECT r.mb_name,s.title, r.day
 				FROM nwc_showing s, nwc_reserved r
 				WHERE s.t_id = r.t_id AND
-						r.account_no = $mmbrAcct";
+						s.complex_name = r.complex_name AND
+						r.account_no = '$mmbrAcct' AND
+						r.day <= CURDATE() AND
+						s.start_time = r.time
+						ORDER BY r.mb_name ASC, s.title ASC";
+}
 $results = mysql_query($query);
 
 //Show results in an html table
@@ -36,8 +48,9 @@ if($results)
 {
 	print '<center>';
    print '<table border=1>';
-   print '<th style="width:300px">NAME<th style="width:300px">MOVIE
-				<th style="width:80px">TIME';
+   print '<th style="width:300px">MEMBER
+			<th style="width:300px">MOVIE
+			<th style="width:100px">DAY';
    // Get each row of the result
    while ($row = mysql_fetch_row($results))
    {
@@ -57,6 +70,11 @@ else
    print "<br><br>QUERY FAILED !!! <br><br>QUERY = $query <br><br>ERROR = ";
    die (mysql_error());
 }
-mysql_close($connect);	
 
->
+print '</table><br><br>';
+//echo '<input type="button" value="Back" onclick="location.href=' . "'viewhistory.php?" . SID . "'" . '">';
+?>
+<input type="button" value="Back" onclick="location.href='viewhistory.php?<?php echo htmlspecialchars(SID); ?>'">
+<input type="button" value="Main Menu" onclick="location.href='UserIndex.php?<?php echo htmlspecialchars(SID); ?>'">
+</body></html>
+

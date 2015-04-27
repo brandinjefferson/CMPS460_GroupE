@@ -55,23 +55,14 @@ if ($acctCheck){
 $start_date = date('Y-m-d');
 $expire_date = date('Y-m-d',strtotime('+'. $mmbrLength));
 
-/*$q = "insert into nwc_membership (account_no,start_date,expire_date,password) 
-values(111111111,'$start_date','$expire_date','bullocks')";
-$eq = mysql_query($q);
-if ($eq) {
-	print "It worked?<br>";
-} else {
-	print "Nope <br>";
-}*/
-
 //Add account to database
 $query = "INSERT INTO nwc_membership (account_no,start_date,expire_date,password)
 			values('$mmbrAcct','$start_date','$expire_date','$mmbrPass')";
 $exec_query1 = mysql_query($query);
 
 //Add member to database and attach to account
-$query = "INSERT INTO nwc_member (mb_name,account_no,phone_no,email,age,addr)
-			values('$mmbrName', '$mmbrAcct',$mmbrPhone,'$mmbrEmail',$mmbrAge,'$mmbrAddr')";
+$query = "INSERT INTO nwc_member (mb_name,account_no,phone_no,email,age,addr,main_mb)
+			values('$mmbrName', '$mmbrAcct',$mmbrPhone,'$mmbrEmail',$mmbrAge,'$mmbrAddr',1)";
 $exec_query2 = mysql_query($query);
 
 //Send email containing account information.
@@ -111,15 +102,15 @@ if ($exec_query1 && $exec_query2){
 	print("Your credentials have been sent to the e-mail you provided. <br>");
 	print("Account Number: $mmbrAcct <br>");
 	print("Password: $mmbrPass <br> <br>");
+	print("$mmbrName is the primary user for this account.<br>");
 	print("Please keep track of these, as they are required in order to use our services.<br><br>");
+	print('<input type="button" value="Log In" onclick="location.href=' . "'UserIndex.php'" . '">');
 }
 else {
-	print("There was an error creating your information. Please ensure you've filled everything out.")
+	print("There was an error creating your information. Please ensure you've filled everything out.<br><br>");
+	print('<input type="button" value="Back" onclick="location.href=' . "'signup.html'" . '">');
 }
 mysql_close($connect);
 ?>
-
-<button type="button" onclick="login.html">Log In</button>
-<button type="button" onclick="mainmenu.html">Menu</button>
 
 </body></html>
