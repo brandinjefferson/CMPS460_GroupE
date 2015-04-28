@@ -17,14 +17,15 @@ $mmbrAge = $_POST['mmbrAge'];
 $mmbrAddr = $_POST['mmbrAddr'];
 $mmbrPhone = $_POST['mmbrPhone'];
 $mmbrEmail = $_POST['mmbrEmail'];
+$mmbrPass = $_POST['mmbrPass'];
 
 if (empty($mmbrName)||empty($mmbrAge)||empty($mmbrAddr)||empty($mmbrPhone)||empty($mmbrEmail)){
 	echo "<p>Please complete the information.</p><br>";
 }
 else {
 	//Add member to database and attach to account
-	$query = "INSERT INTO nwc_member (mb_name,account_no,phone_no,email,age,addr,main_mb)
-			values('$mmbrName', '$mmbrAcct',$mmbrPhone,'$mmbrEmail',$mmbrAge,'$mmbrAddr',0)";
+	$query = "INSERT INTO nwc_member (mb_name,account_no,phone_no,email,age,addr,main_mb,password)
+			values('$mmbrName', '$mmbrAcct',$mmbrPhone,'$mmbrEmail',$mmbrAge,'$mmbrAddr',0,'$mmbrPass')";
 	$exec_query = mysql_query($query);
 	
 	if ($exec_query){

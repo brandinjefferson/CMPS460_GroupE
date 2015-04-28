@@ -56,13 +56,13 @@ $start_date = date('Y-m-d');
 $expire_date = date('Y-m-d',strtotime('+'. $mmbrLength));
 
 //Add account to database
-$query = "INSERT INTO nwc_membership (account_no,start_date,expire_date,password)
-			values('$mmbrAcct','$start_date','$expire_date','$mmbrPass')";
+$query = "INSERT INTO nwc_membership (account_no,start_date,expire_date)
+			values('$mmbrAcct','$start_date','$expire_date')";
 $exec_query1 = mysql_query($query);
 
 //Add member to database and attach to account
-$query = "INSERT INTO nwc_member (mb_name,account_no,phone_no,email,age,addr,main_mb)
-			values('$mmbrName', '$mmbrAcct',$mmbrPhone,'$mmbrEmail',$mmbrAge,'$mmbrAddr',1)";
+$query = "INSERT INTO nwc_member (mb_name,account_no,phone_no,email,age,addr,main_mb,password)
+			values('$mmbrName', '$mmbrAcct',$mmbrPhone,'$mmbrEmail',$mmbrAge,'$mmbrAddr',1,'$mmbrPass')";
 $exec_query2 = mysql_query($query);
 
 //Send email containing account information.
@@ -101,6 +101,7 @@ if ($exec_query1 && $exec_query2){
 	print("Account successfully created.<br>");
 	print("Your credentials have been sent to the e-mail you provided. <br>");
 	print("Account Number: $mmbrAcct <br>");
+	print("User Name: $mmbrName <br>");
 	print("Password: $mmbrPass <br> <br>");
 	print("$mmbrName is the primary user for this account.<br>");
 	print("Please keep track of these, as they are required in order to use our services.<br><br>");

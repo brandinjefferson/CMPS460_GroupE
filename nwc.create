@@ -30,8 +30,7 @@ create table nwc_membership
 (
 	account_no		numeric(9) primary key,
 	start_date		date not null,
-	expire_date		date not null,
-	password        	varchar(30) not null
+	expire_date		date not null
 )
 engine=InnoDB;
 
@@ -71,6 +70,7 @@ create table nwc_member
 	age			numeric(3) check(age > 0 and age <= 120),
 	addr			varchar(50),
 	main_mb			boolean,
+	password        	varchar(30) not null,
 	primary key(account_no, mb_name)
 )
 engine=InnoDB;
