@@ -1,3 +1,4 @@
+<!-- No longer being used -->
 <html><head>
 <title>New Wave Cinema: View History</title>
 </head><body>
@@ -17,7 +18,7 @@ if (!loggedin()){
 $name = $_GET['mmbrName'];
 //For test purposes, use this acct
 //$mmbrAcct = '990466567';
-$mmbrAcct = $_SESSION['user_id'];
+$mmbrAcct = $_SESSION['account_no'];
 //Generate and run query
 //If a name was chosen, run first query.
 if ($name != "*") {

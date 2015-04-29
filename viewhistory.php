@@ -1,3 +1,8 @@
+<!--
+Description: Displays the history of an account or individual member.
+Author: Brandin Jefferson
+CLID: bej0843
+-->
 <!-- www.w3schools.com/Ajax/default.asp 
 stackoverflow.com/questions/11771774/creating-select-list-from-database -->
 <html>
@@ -14,12 +19,12 @@ include('sessioncore.php');
 //Connect to the database
 include('connecttophp.php');
 
-if (!loggedin()){
+if (!loggedin() && isValidUser()){
 	header("Location: UserIndex.php");
 }
 
 //Get current account number from session id
-$mmbrAcct = $_SESSION['user_id'];
+$mmbrAcct = $_SESSION['account_no'];
 //$mmbrAcct = '990466567';
 
 //Form query
@@ -27,19 +32,79 @@ $q = "SELECT mb_name FROM nwc_member WHERE account_no = '$mmbrAcct'";
 $result = mysql_query($q);
 
 //Show all members related to the account. 
-print '<center><form action="GetHistory.php" method="GET"><select name="mmbrName">';
+print '<center><form action="" method="GET"><select name="mmbrName">';
 print '<option value = "*">All</option>';
 while ($row=mysql_fetch_array($result)) {
 	print "<option value='$row[mb_name]'>$row[mb_name]</option>";
 }
 print "	</select>
-	<input type='submit' value='Submit'>
+    <input type='submit' value='Submit'>
 	</form></center>
 	<br><br>" ;
 		//<br>
 		//<div id='chosenName'>Results</div><br>"
 
+if (!empty($_GET)){
+    //Get variables; name from viewhistory.php, mmbrAcct from the session
+    $name = $_GET['mmbrName'];
+    //For test purposes, use this acct
+    //$mmbrAcct = '990466567';
+    $mmbrAcct = $_SESSION['account_no'];
+    //Generate and run query
+    //If a name was chosen, run first query.
+    if ($name != "*") {
+    	$query = "SELECT r.mb_name, s.title, r.day
+    				FROM nwc_showing s, nwc_reserved r
+    				WHERE r.mb_name = '$name' AND 
+    						s.t_id = r.t_id AND
+    						s.complex_name = r.complex_name AND
+    						s.start_time = r.time AND
+    						r.account_no = '$mmbrAcct' AND
+    						r.day <= CURDATE()
+    						ORDER BY r.mb_name ASC, s.title ASC";
+    }
+    else {
+    	$query = "SELECT r.mb_name,s.title, r.day
+    				FROM nwc_showing s, nwc_reserved r
+    				WHERE s.t_id = r.t_id AND
+    						s.complex_name = r.complex_name AND
+    						r.account_no = '$mmbrAcct' AND
+    						r.day <= CURDATE() AND
+    						s.start_time = r.time
+    						ORDER BY r.mb_name ASC, s.title ASC";
+    }
+    $results = mysql_query($query);
 
+    //Show results in an html table
+    if($results)
+    {
+    	print '<center>';
+       print '<table border=1>';
+       print '<th style="width:300px">MEMBER
+    			<th style="width:300px">MOVIE
+    			<th style="width:100px">DAY';
+       // Get each row of the result
+       while ($row = mysql_fetch_row($results))
+       {
+          print '<tr>';
+          // Get each attribute in the row
+          foreach($row as $attribute)
+          {
+             print "<td>$attribute</td> ";
+          }
+          print '</tr>';
+       }
+    }
+    else
+    {
+       // Display the query and the MySQL error message
+       print "<br><br>QUERY FAILED !!! <br><br>QUERY = $query <br><br>ERROR = ";
+       die (mysql_error());
+    }
+
+    print '</table><br><br>';
+    print '</center>';
+}
 ?>
 <input type="button" value="Main Menu" onclick="location.href='UserIndex.php?<?php echo htmlspecialchars(SID); ?>'">
 </body>

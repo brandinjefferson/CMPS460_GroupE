@@ -1,5 +1,12 @@
+<!--
+Description: Creates a random account number and uses the information from signup.php to attach a member to it. That member is marked as the primary user.
+Author: Brandin Jefferson
+CLID: bej0843
+-->
 <html>
-<head><title>New Wave Cinema: Account Information</title></head>
+<head><title>New Wave Cinema: Account Information</title>
+
+</head>
 <?php 
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
@@ -63,7 +70,10 @@ $exec_query1 = mysql_query($query);
 //Add member to database and attach to account
 $query = "INSERT INTO nwc_member (mb_name,account_no,phone_no,email,age,addr,main_mb,password)
 			values('$mmbrName', '$mmbrAcct',$mmbrPhone,'$mmbrEmail',$mmbrAge,'$mmbrAddr',1,'$mmbrPass')";
-$exec_query2 = mysql_query($query);
+if (!empty($mmbrPass) && !empty($mmbrName)){
+    $exec_query2 = mysql_query($query);
+}
+else $exec_query2 = false;
 
 //Send email containing account information.
 $subject = "New Wave Cinema Account Information";
@@ -109,7 +119,8 @@ if ($exec_query1 && $exec_query2){
 }
 else {
 	print("There was an error creating your information. Please ensure you've filled everything out.<br><br>");
-	print('<input type="button" value="Back" onclick="location.href=' . "'signup.html'" . '">');
+	//print('<input type="button" value="Back" onclick="location.href=' . "'signup.html'" . '">');
+	print("<input type='button' value='Back' onclick='javascript:history.back()'>");
 }
 mysql_close($connect);
 ?>

@@ -1,3 +1,8 @@
+<!--
+Description: Receives information to add a member to an account. If the user is not the primary member of the account, then the page only displays a button back to the main menu and a message.
+Author: Brandin Jefferson
+CLID: bej0843
+-->
 <html>
 <head>
 <title>New Wave Cinema: Add Member</title>
@@ -6,16 +11,17 @@
 <?php 
 include('connecttophp.php');
 include('sessioncore.php');
-if (!loggedin()){
+if (!loggedin() && isValidUser()){
 	header("Location: UserIndex.php");
 }
-$curAcct = $_SESSION['user_id'];
+$curAcct = $_SESSION['account_no'];
 $curName = $_SESSION['user_name'];
 
-$query = 'SELECT main_mb FROM nwc_member WHERE account_no = "$curAcct" AND mb_name = "$curName"';
-$exec_query = mysql_query($query);
-if ($exec_query == 0){
-	echo "You must be a primary member to add other members.<br><br>"
+$query = 'SELECT * FROM nwc_member WHERE account_no = "' . $curAcct.'" AND mb_name = "'.$curName . '" and main_mb=1';
+$exec_query = mysql_fetch_assoc(mysql_query($query));
+
+if (!$exec_query['main_mb']){
+	echo "You must be a primary member to add other members.<br><br>";
 }
 else {
 	echo '

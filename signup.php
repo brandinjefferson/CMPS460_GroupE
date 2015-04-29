@@ -1,3 +1,8 @@
+<!--
+Description: Gets information for creating a membership. Leads to AcctCreate.php
+Author: Brandin Jefferson
+CLID: bej0843
+-->
 <html>
 <head>
 <title>New Wave Cinema: Register</title>

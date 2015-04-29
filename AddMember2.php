@@ -1,3 +1,8 @@
+<!--
+Description: Adds a member to the currently logged account.
+Author: Brandin Jefferson
+CLID: bej0843
+-->
 <html><head>
 <title>New Wave Cinema: Add Member</title>
 </head>
@@ -6,12 +11,12 @@
 include('connecttophp.php');
 include('sessioncore.php');
 
-if (!loggedin()){
+if (!loggedin() && isValidUser()){
 	header("Location: UserIndex.php");
 }
 
 //Get variables
-$mmbrAcct = $_SESSION['user_id'];
+$mmbrAcct = $_SESSION['account_no'];
 $mmbrName = $_POST['mmbrName'];
 $mmbrAge = $_POST['mmbrAge'];
 $mmbrAddr = $_POST['mmbrAddr'];
@@ -19,7 +24,7 @@ $mmbrPhone = $_POST['mmbrPhone'];
 $mmbrEmail = $_POST['mmbrEmail'];
 $mmbrPass = $_POST['mmbrPass'];
 
-if (empty($mmbrName)||empty($mmbrAge)||empty($mmbrAddr)||empty($mmbrPhone)||empty($mmbrEmail)){
+if (empty($mmbrName)||empty($mmbrAge)||empty($mmbrAddr)||empty($mmbrPhone)||empty($mmbrEmail)&&!empty($mmbrPass)){
 	echo "<p>Please complete the information.</p><br>";
 }
 else {
@@ -29,14 +34,14 @@ else {
 	$exec_query = mysql_query($query);
 	
 	if ($exec_query){
-		$query = "SELECT expire_date
+		$query = "SELECT datediff(expire_date,start_date)
+					AS diffdate
 					FROM nwc_membership
 					WHERE account_no = '$mmbrAcct'";
-		$curdate = date_create(date('Y-m-d'));
-		$expdate = date_create('$query');
-		$mmbrPrice = '$' . date_diff($curdate,$expdate)->format('%a') . '.00';
-		echo '<p>$mmbrName successfully added to account $mmbrAcct.</p><br>
-				<p>Price: $mmbrPrice</p><br><br>';
+		$result = mysql_fetch_assoc(mysql_query($query));
+		$mmbrPrice = '$' . $result["diffdate"] . '.00';
+		echo '<p>' . $mmbrName . ' successfully added to account ' . $mmbrAcct. '</p><br>
+				<p>Price: '. $mmbrPrice . '</p><br><br>';
 	}
 }
 ?>
