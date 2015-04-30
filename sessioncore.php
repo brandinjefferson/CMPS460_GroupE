@@ -12,7 +12,7 @@ $http_referer = $_SERVER['HTTP_REFERER'];
 //////////////FUNCTION TO CHECK TO SEE IF USER IS LOGGED IN ....
 function loggedin(){
     
-    if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])){
+    if (isset($_SESSION['account_no']) && !empty($_SESSION['account_no'])){
     
    return true;
     }
@@ -37,7 +37,7 @@ function loggedinEmp(){
 //////////CAN BE USED IN ANYPART OF PROGRAM IF YOU REQUIRE SESSIONCORE.PHP AS USED IN USERINDEX.PHP....THIS IS NEEDED TO START SESSION 
 function findfield($fieldname){
     
-  $query= "SELECT `$fieldname` FROM `nwc_member` WHERE `account_no` = '".$_SESSION['user_id']."' AND `mb_name` = '".$_SESSION['user_name']."'";
+  $query= "SELECT `$fieldname` FROM `nwc_member` WHERE `account_no` = '".$_SESSION['account_no']."' AND `mb_name` = '".$_SESSION['user_name']."'";
 
   if( $query_run=mysql_query($query)){
      
@@ -69,6 +69,17 @@ $query2= "SELECT `$fieldemp` FROM `nwc_employees` WHERE `emp_id` = '".$_SESSION[
 }
 }
 //////////////////////new
-
+//Makes sure user has now run passed
+function isValidUser(){
+	$query = 'SELECT COUNT(expire_date) as c FROM nwc_membership 
+				WHERE account_no = "' . $_SESSION['account_no'] . '" 
+				AND expire_date < CURDATE()';
+	$result = mysql_fetch_assoc(mysql_query($query));
+	if ($result['c'] == '1'){
+		return false;
+	}
+	else
+		return true;
+}
 
 ?>
